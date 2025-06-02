@@ -4,6 +4,7 @@ import { FileUpload } from "./components/FileUpload";
 import { SessionSidebar } from "./components/SessionSidebar";
 import { LogViewer } from "./components/LogViewer";
 import { LogFilters } from "./components/LogFilters";
+import { SessionMetrics } from "./components/SessionMetrics";
 import { useLogFilters } from "./hooks/useLogFilters";
 import type { ClaudeLogEntry } from "./types";
 
@@ -49,29 +50,32 @@ function App() {
 						onSessionSelect={setSelectedSessionId}
 					/>
 					<SidebarInset>
-						<div className="flex flex-col h-full">
-							<div className="border-b p-4">
-								<div className="flex items-center justify-between">
-									<div>
-										<h2 className="text-lg font-semibold">
-											Session: {selectedSessionId?.slice(0, 8)}...
-										</h2>
-										<p className="text-xs text-muted-foreground">
-											{filteredCount} of {totalEntries} messages
-											{filteredCount !== totalEntries && " (filtered)"}
-										</p>
+						<div className="flex h-full">
+							<div className="flex flex-col flex-1">
+								<div className="border-b p-4">
+									<div className="flex items-center justify-between">
+										<div>
+											<h2 className="text-lg font-semibold">
+												Session: {selectedSessionId?.slice(0, 8)}...
+											</h2>
+											<p className="text-xs text-muted-foreground">
+												{filteredCount} of {totalEntries} messages
+												{filteredCount !== totalEntries && " (filtered)"}
+											</p>
+										</div>
+										<FileUpload onFileLoad={handleFileLoad} />
 									</div>
-									<FileUpload onFileLoad={handleFileLoad} />
+								</div>
+								<LogFilters
+									entries={sessionEntries}
+									filters={filters}
+									onFiltersChange={setFilters}
+								/>
+								<div className="flex-1 overflow-hidden">
+									<LogViewer entries={filteredEntries} />
 								</div>
 							</div>
-							<LogFilters
-								entries={sessionEntries}
-								filters={filters}
-								onFiltersChange={setFilters}
-							/>
-							<div className="flex-1 overflow-hidden">
-								<LogViewer entries={filteredEntries} />
-							</div>
+							<SessionMetrics entries={sessionEntries} />
 						</div>
 					</SidebarInset>
 				</SidebarProvider>
