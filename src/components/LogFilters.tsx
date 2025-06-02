@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import type { ClaudeLogEntry } from "../types";
+import type { ClaudeLogEntry, AssistantContent, ToolUseContent } from "../types";
 
 export interface FilterState {
 	searchTerm: string;
@@ -30,10 +30,10 @@ export function LogFilters({ entries, filters, onFiltersChange }: LogFiltersProp
 	const availableTools = React.useMemo(() => {
 		const toolSet = new Set<string>();
 		entries.forEach((entry) => {
-			if (entry.type === "assistant" && "content" in entry.message) {
-				entry.message.content.forEach((content) => {
+			if (entry.type === "assistant") {
+				entry.message.content.forEach((content: AssistantContent) => {
 					if (content.type === "tool_use") {
-						toolSet.add(content.name);
+						toolSet.add((content as ToolUseContent).name);
 					}
 				});
 			}

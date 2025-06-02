@@ -1,24 +1,48 @@
-export interface ClaudeLogEntry {
+// Base interface for common properties
+interface BaseLogEntry {
   parentUuid: string | null;
   isSidechain: boolean;
   userType: string;
   cwd: string;
   sessionId: string;
   version: string;
-  type: 'user' | 'assistant';
-  message: UserMessage | AssistantMessage;
   uuid: string;
   timestamp: string;
-  costUSD?: number;
-  durationMs?: number;
-  requestId?: string;
   toolUseResult?: ToolUseResult;
 }
 
-export interface UserMessage {
-  role: 'user';
-  content: string | ToolResultContent[];
+// User log entry with UserMessage
+export interface UserLogEntry extends BaseLogEntry {
+  type: 'user';
+  message: UserMessage;
 }
+
+// Assistant log entry with AssistantMessage
+export interface AssistantLogEntry extends BaseLogEntry {
+  type: 'assistant';
+  message: AssistantMessage;
+  costUSD?: number;
+  durationMs?: number;
+  requestId?: string;
+}
+
+// Discriminated union of all log entry types
+export type ClaudeLogEntry = UserLogEntry | AssistantLogEntry;
+
+// User message with text content
+export interface TextUserMessage {
+  role: 'user';
+  content: string;
+}
+
+// User message with tool result content
+export interface ToolResultUserMessage {
+  role: 'user';
+  content: ToolResultContent[];
+}
+
+// Discriminated union for user messages
+export type UserMessage = TextUserMessage | ToolResultUserMessage;
 
 export interface AssistantMessage {
   id: string;

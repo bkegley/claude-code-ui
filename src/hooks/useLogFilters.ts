@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { ClaudeLogEntry } from "../types";
+import type { ClaudeLogEntry, AssistantContent, TextContent, ToolUseContent } from "../types";
 import type { FilterState } from "../components/LogFilters";
 
 const getMessageType = (entry: ClaudeLogEntry): "user" | "assistant" | "tool_result" => {
@@ -31,19 +31,19 @@ export function useLogFilters(entries: ClaudeLogEntry[]) {
 
 				if (entry.type === "user" && typeof entry.message.content === "string") {
 					hasMatch = entry.message.content.toLowerCase().includes(searchLower);
-				} else if (entry.type === "assistant" && "content" in entry.message) {
+				} else if (entry.type === "assistant") {
 					// Search in text content
 					const textContent = entry.message.content.find(
-						(item) => item.type === "text"
-					);
+						(item: AssistantContent) => item.type === "text"
+					) as TextContent | undefined;
 					if (textContent && textContent.text.toLowerCase().includes(searchLower)) {
 						hasMatch = true;
 					}
 
 					// Search in tool names
 					const toolUses = entry.message.content.filter(
-						(item) => item.type === "tool_use"
-					);
+						(item: AssistantContent) => item.type === "tool_use"
+					) as ToolUseContent[];
 					if (toolUses.some((tool) => tool.name.toLowerCase().includes(searchLower))) {
 						hasMatch = true;
 					}
@@ -75,10 +75,10 @@ export function useLogFilters(entries: ClaudeLogEntry[]) {
 
 			// Tool filter
 			if (filters.toolFilter) {
-				if (entry.type === "assistant" && "content" in entry.message) {
+				if (entry.type === "assistant") {
 					const hasToolMatch = entry.message.content.some(
-						(content) =>
-							content.type === "tool_use" && content.name === filters.toolFilter
+						(content: AssistantContent) =>
+							content.type === "tool_use" && (content as ToolUseContent).name === filters.toolFilter
 					);
 					if (!hasToolMatch) return false;
 				} else {
