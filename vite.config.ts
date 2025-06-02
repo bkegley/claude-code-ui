@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
 	plugins: [react(), tailwindcss()],
-	base: "/<REPO>/",
+	base: "/claude-code-ui/",
 	resolve: {
 		alias: {
 			"@": path.resolve(__dirname, "./src"),
